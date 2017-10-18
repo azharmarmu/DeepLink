@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Relative Time TextView is used to show time like seconds, mins , hours ago-->
+    <declare-styleable name="RelativeTimeTextView">
+        <attr name="relative_time_prefix" format="string" />
+        <attr name="relative_time_suffix" format="string" />
+        <attr name="reference_time" format="string" />
+    </declare-styleable>
+
+    <!--used to Circle Image is used for User Profile Display-->
+    <declare-styleable name="CircleImageView">
+        <attr name="civ_border_width" format="dimension" />
+        <attr name="civ_border_color" format="color" />
+        <attr name="civ_border_overlay" format="boolean" />
+        <attr name="civ_fill_color" format="color" />
+    </declare-styleable>
+
+    <!-- visible and masked added because of rendering error when we use TextInputEditText-->
+    <item name="visible" type="id"/>
+    <item name="masked" type="id"/>
+</resources>

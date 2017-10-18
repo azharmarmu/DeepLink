@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorLight"
+    android:padding="@dimen/_8dp"
+    tools:context="marmu.com.deeplink.activity.ChatScreenActivity">
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/recycler_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/message_container"
+        android:layout_alignParentTop="true" />
+
+    <marmu.com.deeplink.utils.FrameLayoutFixed
+        android:id="@+id/record_panel"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_alignParentBottom="true"
+        android:layout_toStartOf="@+id/button"
+        android:background="@drawable/rounded_image"
+        android:visibility="gone">
+
+        <LinearLayout
+            android:id="@+id/slide_layout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginStart="30dp"
+            android:orientation="horizontal"
+            tools:ignore="UseCompoundDrawables">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginTop="1dp"
+                android:contentDescription="@string/app_name"
+                android:src="@drawable/ic_chevron" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginStart="6dp"
+                android:text="slide to cancel"
+                android:textColor="#999999"
+                android:textSize="12sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="16dp"
+            android:background="#ffffffff"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginTop="1dp"
+                android:contentDescription="@string/app_name"
+                android:src="@drawable/ic_record" />
+
+            <TextView
+                android:id="@+id/recording_time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginStart="6dp"
+                android:text="00:00"
+                android:textColor="#4d4c4b"
+                android:textSize="16sp" />
+        </LinearLayout>
+
+    </marmu.com.deeplink.utils.FrameLayoutFixed>
+
+    <RelativeLayout
+        android:id="@+id/message_container"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_alignParentBottom="true"
+        android:layout_toStartOf="@+id/button"
+        android:background="@drawable/rounded_image"
+        android:visibility="visible">
+
+        <ImageButton
+            android:id="@+id/emoji_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
+            android:layout_gravity="center"
+            android:background="@null"
+            android:contentDescription="@string/app_name"
+            android:padding="@dimen/_8dp"
+            android:src="@drawable/ic_smiley" />
+
+        <EditText
+            android:id="@+id/input_box_chat"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_gravity="center"
+            android:layout_toEndOf="@+id/emoji_button"
+            android:layout_toStartOf="@+id/camera_button"
+            android:hint="@string/enter_your_message"
+            android:textColor="@color/colorPrimary"
+            android:textColorHint="@color/colorText" />
+
+        <ImageButton
+            android:id="@+id/camera_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:layout_gravity="center|end"
+            android:background="@null"
+            android:contentDescription="@string/app_name"
+            android:padding="@dimen/_8dp"
+            android:src="@drawable/ic_camera" />
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:layout_centerInParent="true">
+
+        <marmu.com.deeplink.utils.CircleImageView
+            android:id="@+id/send_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:contentDescription="@string/app_name"
+            android:padding="@dimen/_8dp"
+            android:src="@drawable/ic_send"
+            android:visibility="gone" />
+
+        <marmu.com.deeplink.utils.CircleImageView
+            android:id="@+id/record_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:layout_gravity="center"
+            android:contentDescription="@string/app_name"
+            android:padding="@dimen/_8dp"
+            android:src="@drawable/ic_mic"
+            android:visibility="visible" />
+    </RelativeLayout>
+
+</RelativeLayout>

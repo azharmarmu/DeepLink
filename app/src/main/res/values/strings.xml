@@ -1,0 +1,44 @@
+<resources>
+    <string name="facebook_app_id">852450394910547</string>
+    <string name="app_name">Chat</string>
+    <string name="my_chat">My Chat</string>
+    <string name="description">Have a safe chat</string>
+    <string name="get_started">Get started</string>
+    <string name="search">search</string>
+    <string name="setting">Setting</string>
+    <string name="new_group">New group</string>
+    <string name="invite_a_friend">Invite a friend</string>
+    <string name="login_activity_description">Let\'s chat will send an SMS message to verify your phone number Enter your country code and phone number</string>
+    <string name="phone_number">phone number</string>
+    <string name="next">Next</string>
+    <string name="dummy_dial_code">91</string>
+    <string name="dummy_name">VSL</string>
+    <string name="dummy_name_description">My app name is</string>
+    <string name="dummy_time">5:26 PM</string>
+    <string name="dummy_code">IN</string>
+    <string name="dummy_country">India</string>
+    <string name="enter_otp">Enter OTP</string>
+    <string name="otp_description">We\'ve sent an OTP to your mobile number</string>
+    <string name="submit">submit</string>
+    <string name="resend_otp">Resend OTP</string>
+    <string name="dash">______</string>
+    <string name="anonymous">Anonymous</string>
+
+
+    <!--APP Invite-->
+    <string name="invitation_title">Send App Invite Quickstart Invitation</string>
+    <string name="invitation_message">This app is terrific, give it a try and get $5 off!</string>
+    <string name="invitation_deep_link">https://uyvc3.app.goo.gl/</string>
+    <string name="invitation_custom_image">https://developers.google.com/identity/images/g-logo.png</string>
+    <string name="invitation_cta">Install!</string>
+
+    <string name="send_failed">Sending invitations failed</string>
+    <string name="invite_dialog_title">You got an invitation!</string>
+
+    <!--Play services error-->
+    <string name="google_play_services_error">Google Play Services Error</string>
+    <string name="refresh">Refresh</string>
+    <string name="enter_your_message">Enter your message</string>
+    <string name="dummy_you_msg">Android charting application xml ui.</string>
+    <string name="dummy_me_msg">Android charting application xml ui design.</string>
+</resources>

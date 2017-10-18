@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "595634576697",
+    "firebase_url": "https://chatdemo-9fe51.firebaseio.com",
+    "project_id": "chatdemo-9fe51",
+    "storage_bucket": "chatdemo-9fe51.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:595634576697:android:e18855a9f624d2b9",
+        "android_client_info": {
+          "package_name": "marmu.com.deeplink"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "595634576697-vgn6p1qpmj0opmr0bp6i2rh75ohghn7k.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "marmu.com.deeplink",
+            "certificate_hash": "dc737a85bc3a15b554f8f9ea989957e30086d0d7"
+          }
+        },
+        {
+          "client_id": "595634576697-r2kd8clfiaei26kp6n8rq0avdk61p09c.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBpByp7sWtmosnDoFDIUkxZHBfMq2VXVGo"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "595634576697-r2kd8clfiaei26kp6n8rq0avdk61p09c.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

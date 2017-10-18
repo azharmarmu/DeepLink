@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/sales_man_details"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="@dimen/_8dp">
+
+    <RelativeLayout
+        android:id="@+id/chat_holder"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="@dimen/_8dp">
+
+        <marmu.com.deeplink.utils.CircleImageView
+            android:id="@+id/iv_profile_pic"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:background="@drawable/ripple_oval"
+            android:contentDescription="@string/app_name" />
+
+        <TextView
+            android:id="@+id/tv_chat_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/_16dp"
+            android:layout_marginStart="@dimen/_16dp"
+            android:layout_toEndOf="@+id/iv_profile_pic"
+            android:layout_toStartOf="@+id/tv_chat_time"
+            android:text="@string/dummy_name"
+            android:textSize="@dimen/_16sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/tv_chat_last_msg"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/tv_chat_name"
+            android:layout_marginEnd="@dimen/_16dp"
+            android:layout_marginStart="@dimen/_16dp"
+            android:layout_toEndOf="@+id/iv_profile_pic"
+            android:layout_toStartOf="@+id/tv_chat_time"
+            android:text="@string/dummy_name_description"
+            android:textSize="@dimen/_12sp" />
+
+        <TextView
+            android:id="@+id/tv_chat_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:text="@string/dummy_time"
+            android:textSize="@dimen/_16sp" />
+
+    </RelativeLayout>
+</android.support.v7.widget.CardView>

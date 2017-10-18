@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="@dimen/_16dp">
+
+    <TextView
+        android:id="@+id/tv_country_dial_code"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:text="@string/dummy_dial_code"
+        android:textSize="@dimen/_16sp"
+        android:textStyle="normal" />
+
+    <TextView
+        android:id="@+id/tv_country_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/_16dp"
+        android:layout_marginStart="@dimen/_16dp"
+        android:layout_toEndOf="@+id/tv_country_dial_code"
+        android:layout_toStartOf="@+id/tv_country_code"
+        android:text="@string/dummy_country"
+        android:textSize="@dimen/_16sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/tv_country_code"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:text="@string/dummy_code"
+        android:textSize="@dimen/_16sp"
+        android:textStyle="italic" />
+
+</RelativeLayout>
