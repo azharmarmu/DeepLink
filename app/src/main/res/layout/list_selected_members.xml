@@ -28,6 +28,8 @@
         android:layout_below="@+id/iv_member_pic"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="@dimen/_4dp"
-        android:text="" />
+        android:text=""
+        android:textAppearance="@style/Base.TextAppearance.AppCompat.Small"
+        android:textColor="@color/colorAccent" />
 
 </RelativeLayout>

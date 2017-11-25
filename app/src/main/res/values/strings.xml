@@ -41,4 +41,5 @@
     <string name="enter_your_message">Enter your message</string>
     <string name="dummy_you_msg">Android charting application xml ui.</string>
     <string name="dummy_me_msg">Android charting application xml ui design.</string>
+    <string name="log_out">Log out</string>
 </resources>

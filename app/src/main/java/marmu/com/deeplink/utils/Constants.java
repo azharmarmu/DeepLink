@@ -16,8 +16,8 @@ public class Constants {
     public static int REQUEST_GALLERY = 2;
 
     /**/
-    public static final String LOGIN = "Login";
-    public static final String TOKEN = "token";
+    static final String LOGIN = "Login";
+    static final String TOKEN = "token";
     public static PhoneAuthProvider.ForceResendingToken OTP_RESEND_TOKEN = null;
 
     // broadcast receiver intent filters
@@ -42,11 +42,13 @@ public class Constants {
     public static final FirebaseAuth AUTH = FirebaseAuth.getInstance();
 
     /*Firebase Fields*/
-    public static final String USER = "users";
+    static final String USER = "users";
+    static final String GROUP = "chat_group";
     public static final String MESSAGE = "message";
     public static final String MESSAGE_STATUS = "message_status";
     public static final String IMAGE = "image";
     public static final String AUDIO = "audio";
+    public static final String BOT = "bot";
 
     /*Users Field*/
     public static final String DEVICE_TOKEN = "device_token";
@@ -76,6 +78,7 @@ public class Constants {
     public static final String HIS_NAME = "his_name";
     public static final String HIS_KEY = "his_key";
     public static final String CHAT_KEY = "chat_key";
+    public static final String GROUP_NAME = "group_name";
     public static final String PHONE_NUMBER = "phone_number";
     public static final String VERIFICATION_ID = "verification_id";
 

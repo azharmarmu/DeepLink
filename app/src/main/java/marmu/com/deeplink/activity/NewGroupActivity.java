@@ -1,15 +1,23 @@
 package marmu.com.deeplink.activity;
 
+import android.annotation.SuppressLint;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.ContactsContract;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.EditText;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -20,18 +28,27 @@ import marmu.com.deeplink.adapter.SelectedMemberAdapter;
 import marmu.com.deeplink.interfaces.SelectedMembersListener;
 import marmu.com.deeplink.model.ContactsModel;
 import marmu.com.deeplink.utils.Constants;
+import marmu.com.deeplink.utils.DialogUtils;
+import marmu.com.deeplink.utils.Firebase;
 import marmu.com.deeplink.utils.Permissions;
 import marmu.com.deeplink.utils.Users;
 
+import static java.lang.System.currentTimeMillis;
+import static java.util.UUID.randomUUID;
+
 @SuppressWarnings("unchecked")
-public class NewGroupActivity extends AppCompatActivity implements SelectedMembersListener {
+public class NewGroupActivity extends AppCompatActivity implements SelectedMembersListener, Serializable {
+    static List<ContactsModel> selectedMembers = new ArrayList<>();
+
+    public List<String> allPhoneNumber = new ArrayList<>();
+    public List<String> allKey = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_group);
         if (Permissions.CONTACTS(NewGroupActivity.this)) {
-
+            selectedMembers.clear();
             if (getSupportActionBar() != null) {
                 getSupportActionBar().setTitle("Select Contact");
                 getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -45,9 +62,6 @@ public class NewGroupActivity extends AppCompatActivity implements SelectedMembe
         }
     }
 
-    public List<String> allPhoneNumber = new ArrayList<>();
-    public List<String> allKey = new ArrayList<>();
-
     public void getUsers() {
         HashMap<String, Object> users = Users.users;
         if (users != null && users.size() > 0) {
@@ -55,7 +69,13 @@ public class NewGroupActivity extends AppCompatActivity implements SelectedMembe
                 HashMap<String, Object> user = (HashMap<String, Object>) users.get(key);
                 if (user.containsKey(Constants.PHONE_NUMBER)) {
                     if (!Constants.MY_PHONE_NUMBER.equalsIgnoreCase(user.get(Constants.PHONE_NUMBER).toString())) {
-                        allPhoneNumber.add(String.valueOf(user.get(Constants.PHONE_NUMBER)));
+                        String phNumber = String.valueOf(user.get(Constants.PHONE_NUMBER));
+                        phNumber = phNumber.replace(" ", "");
+                        if (phNumber.contains("+91")) {
+                            phNumber = phNumber.substring(3);
+                        }
+
+                        allPhoneNumber.add(phNumber);
                         allKey.add(key);
                     }
                 }
@@ -137,12 +157,15 @@ public class NewGroupActivity extends AppCompatActivity implements SelectedMembe
         recyclerView.setAdapter(adapter);
     }
 
-    static List<ContactsModel> selectedMembers = new ArrayList<>();
 
     @Override
     public void onSelectedMember(ContactsModel member) {
-        selectedMembers.add(member);
-        populateSelectedMemberView();
+        if (!selectedMembers.contains(member)) {
+            selectedMembers.add(member);
+            populateSelectedMemberView();
+        } else {
+            DialogUtils.appToastShort(NewGroupActivity.this, "Already added");
+        }
     }
 
     @Override
@@ -167,9 +190,70 @@ public class NewGroupActivity extends AppCompatActivity implements SelectedMembe
         }
     }
 
+    @SuppressLint("InflateParams")
     public void createGroup(View view) {
-        if (selectedMembers.size() > 0) {
+        if (selectedMembers.size() > 1) {
+            AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(NewGroupActivity.this);
+            LayoutInflater inflater = (LayoutInflater) NewGroupActivity.this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            final View dialogView = inflater.inflate(R.layout.dialog_name, null);
+            dialogBuilder.setView(dialogView);
 
+            final EditText etName = dialogView.findViewById(R.id.et_my_name);
+            etName.setHint("Group Name");
+
+            dialogBuilder.setPositiveButton("Done", new DialogInterface.OnClickListener() {
+                @SuppressWarnings("ConstantConditions")
+                public void onClick(DialogInterface dialog, int whichButton) {
+                    String groupName = etName.getText().toString();
+                    if (!groupName.isEmpty()) {
+                        String chatKey = Firebase.messageDBRef.push().getKey();
+
+                        HashMap<String, Object> botDetails = new HashMap<>();
+                        botDetails.put(Constants.MESSAGE, "You created group " + groupName);
+                        botDetails.put(Constants.DATE, currentTimeMillis());
+                        botDetails.put(Constants.TYPE, Constants.BOT);
+
+                        //Bot message
+                        Firebase.messageDBRef.child(chatKey).child(randomUUID().toString()).updateChildren(botDetails);
+
+                        HashMap<String, Object> myChatDetails = new HashMap<>();
+                        myChatDetails.put("name", groupName);
+                        myChatDetails.put("no_members", selectedMembers.size());
+                        myChatDetails.put("admin", Constants.AUTH.getCurrentUser().getUid());
+                        myChatDetails.put("isGroupChat", true);
+                        myChatDetails.put(Constants.DATE, currentTimeMillis());
+
+                        //updating selected members chatList
+                        for (int i = 0; i < selectedMembers.size(); i++) {
+                            String key = selectedMembers.get(i).getKey();
+                            Firebase.userListDBRef.child(key).child(Constants.MY_CHAT)
+                                    .child(chatKey).updateChildren(myChatDetails);
+                        }
+                        //updating my chatList
+                        Firebase.userListDBRef.child(Constants.AUTH.getCurrentUser().getUid())
+                                .child(Constants.MY_CHAT)
+                                .child(chatKey).updateChildren(myChatDetails);
+
+                        Intent chatActivity = new Intent(NewGroupActivity.this, ChatScreenActivity.class);
+                        chatActivity.putExtra("isGroupChat", true);
+                        chatActivity.putExtra(Constants.CHAT_KEY, chatKey);
+                        chatActivity.putExtra(Constants.HIS_NAME, groupName);
+                        startActivity(chatActivity);
+
+                        finish();
+                    }
+                }
+            });
+            dialogBuilder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int whichButton) {
+                    dialog.dismiss();
+                }
+            });
+            AlertDialog b = dialogBuilder.create();
+            b.show();
+
+        } else {
+            DialogUtils.appToastShort(NewGroupActivity.this, "Minimum 3 members need to be added for group chat");
         }
     }
 

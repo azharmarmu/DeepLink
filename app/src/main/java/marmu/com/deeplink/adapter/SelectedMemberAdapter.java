@@ -57,7 +57,8 @@ public class SelectedMemberAdapter extends RecyclerView.Adapter<SelectedMemberAd
         ImageUtils.loadImageToViewByURL(context, holder.contactPic,
                 Uri.parse(String.valueOf(user.get(Constants.IMG_URL))));
 
-        final String userName = String.valueOf(model.getName());
+        String userName = String.valueOf(model.getName()).trim();
+        userName = userName.substring(0, userName.indexOf(" "));
 
         holder.contactName.setText(userName);
 

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:custom="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -10,7 +11,7 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <RelativeLayout
+        <android.support.constraint.ConstraintLayout
             android:id="@+id/profile_pic_layout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -20,37 +21,45 @@
                 android:id="@+id/iv_profile_pic"
                 android:layout_width="150dp"
                 android:layout_height="150dp"
-                android:layout_alignParentBottom="true"
-                android:layout_centerHorizontal="true"
                 android:contentDescription="@string/app_name"
                 android:onClick="viewImage"
-                android:src="@drawable/people" />
+                android:src="@drawable/people"
+                android:transitionName="@string/app_name"
+                custom:layout_constraintLeft_toLeftOf="parent"
+                custom:layout_constraintRight_toRightOf="parent" />
 
             <marmu.com.deeplink.utils.CircleImageView
                 android:id="@+id/iv_choose_pic"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
                 android:layout_alignBottom="@+id/iv_profile_pic"
                 android:layout_alignEnd="@+id/iv_profile_pic"
                 android:contentDescription="@string/app_name"
                 android:onClick="chooseImage"
-                android:src="@drawable/ic_camera_alt" />
+                android:src="@drawable/ic_camera_alt"
+                custom:layout_constraintBottom_toBottomOf="parent"
+                custom:layout_constraintHorizontal_bias="0.738"
+                custom:layout_constraintLeft_toLeftOf="parent"
+                custom:layout_constraintRight_toRightOf="parent"
+                custom:layout_constraintTop_toTopOf="parent"
+                custom:layout_constraintVertical_bias="0.99" />
 
             <ProgressBar
                 android:id="@+id/progress_bar"
-                style="?android:attr/progressBarStyleHorizontal"
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/_5dp"
-                android:layout_alignEnd="@+id/iv_profile_pic"
-                android:layout_alignStart="@+id/iv_profile_pic"
+                android:layout_width="@dimen/_70dp"
+                android:layout_height="@dimen/_70dp"
+                android:layout_alignBaseline="@+id/iv_profile_pic"
                 android:layout_centerVertical="true"
-                android:layout_marginEnd="@dimen/_16dp"
-                android:layout_marginStart="@dimen/_16dp"
-                android:maxHeight="@dimen/_5dp"
+                android:max="500"
+                android:progress="0"
                 android:progressDrawable="@drawable/progress_bar_color"
-                android:visibility="gone" />
+                android:visibility="visible"
+                custom:layout_constraintBottom_toBottomOf="parent"
+                custom:layout_constraintLeft_toLeftOf="parent"
+                custom:layout_constraintRight_toRightOf="parent"
+                custom:layout_constraintTop_toTopOf="parent" />
 
-        </RelativeLayout>
+        </android.support.constraint.ConstraintLayout>
 
         <RelativeLayout
             android:layout_width="match_parent"

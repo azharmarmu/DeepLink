@@ -1,5 +1,6 @@
 package marmu.com.deeplink.adapter;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -67,6 +68,7 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.MyViewHo
                 chatActivity.putExtra(Constants.HIS_NAME, userName);
                 chatActivity.putExtra("isGroupChat", false);
                 context.startActivity(chatActivity);
+                ((Activity) context).finish();
             }
         });
 

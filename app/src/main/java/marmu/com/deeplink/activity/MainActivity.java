@@ -1,5 +1,6 @@
 package marmu.com.deeplink.activity;
 
+import android.Manifest;
 import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
@@ -21,10 +22,19 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.appinvite.FirebaseAppInvite;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.dynamiclinks.FirebaseDynamicLinks;
 import com.google.firebase.dynamiclinks.PendingDynamicLinkData;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings;
+import com.karumi.dexter.Dexter;
+import com.karumi.dexter.PermissionToken;
+import com.karumi.dexter.listener.DexterError;
+import com.karumi.dexter.listener.PermissionDeniedResponse;
+import com.karumi.dexter.listener.PermissionGrantedResponse;
+import com.karumi.dexter.listener.PermissionRequest;
+import com.karumi.dexter.listener.PermissionRequestErrorListener;
+import com.karumi.dexter.listener.single.PermissionListener;
 
 import marmu.com.deeplink.R;
 import marmu.com.deeplink.adapter.ViewPagerAdapter;
@@ -37,7 +47,8 @@ import marmu.com.deeplink.utils.DialogUtils;
 import marmu.com.deeplink.utils.Users;
 
 @SuppressWarnings("unchecked")
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity
+        implements PermissionListener, PermissionRequestErrorListener {
     private static final String TAG = MainActivity.class.getClass().getSimpleName();
     ImageButton fabMain;
     public static int tab = 0;
@@ -48,7 +59,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         receiveDeepLink();
         remoteConfig();
-        fabMain = (ImageButton) findViewById(R.id.ib_main);
+        fabMain = findViewById(R.id.ib_main);
 
         if (getSupportActionBar() != null) {
             getSupportActionBar().setTitle("Let'sChat");
@@ -183,13 +194,16 @@ public class MainActivity extends AppCompatActivity {
                 tab = position;
                 switch (position) {
                     case 0:
-                        fabMain.setImageDrawable(ContextCompat.getDrawable(MainActivity.this, R.drawable.ic_person));
+                        fabMain.setImageDrawable(ContextCompat
+                                .getDrawable(MainActivity.this, R.drawable.ic_person));
                         break;
                     case 1:
-                        fabMain.setImageDrawable(ContextCompat.getDrawable(MainActivity.this, R.drawable.ic_status));
+                        fabMain.setImageDrawable(ContextCompat
+                                .getDrawable(MainActivity.this, R.drawable.ic_status));
                         break;
                     case 2:
-                        fabMain.setImageDrawable(ContextCompat.getDrawable(MainActivity.this, R.drawable.ic_local_phone));
+                        fabMain.setImageDrawable(ContextCompat
+                                .getDrawable(MainActivity.this, R.drawable.ic_local_phone));
                         break;
 
                 }
@@ -210,15 +224,16 @@ public class MainActivity extends AppCompatActivity {
     public void fabClick(View view) {
         switch (tab) {
             case 0:
-                DialogUtils.appToastShort(MainActivity.this, Constants.CHATS);
-                startActivity(new Intent(MainActivity.this, ContactActivity.class));
+                Dexter.withActivity(this)
+                        .withPermission(
+                                Manifest.permission.READ_CONTACTS)
+                        .withListener(this)
+                        .check();
                 break;
             case 1:
-                DialogUtils.appToastShort(MainActivity.this, Constants.STATUS);
                 //startActivity(new Intent(MainActivity.this, ContactActivity.class));
                 break;
             case 2:
-                DialogUtils.appToastShort(MainActivity.this, Constants.CALLS);
                 //startActivity(new Intent(MainActivity.this, ContactActivity.class));
                 break;
         }
@@ -247,6 +262,11 @@ public class MainActivity extends AppCompatActivity {
             case R.id.action_settings:
                 startActivity(new Intent(getApplicationContext(), Settings.class));
                 break;
+            case R.id.action_logout:
+                FirebaseAuth.getInstance().signOut();
+                startActivity(new Intent(MainActivity.this, LoginActivity.class));
+                finish();
+                break;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -255,5 +275,27 @@ public class MainActivity extends AppCompatActivity {
     public void onBackPressed() {
         super.onBackPressed();
         finish();
+    }
+
+    @Override
+    public void onPermissionGranted(PermissionGrantedResponse response) {
+        startActivity(new Intent(MainActivity.this, ContactActivity.class));
+    }
+
+    @Override
+    public void onPermissionDenied(PermissionDeniedResponse response) {
+        DialogUtils.appSnakeBar(MainActivity.this,
+                "Contact permission is required");
+    }
+
+    @Override
+    public void onPermissionRationaleShouldBeShown(PermissionRequest permission,
+                                                   PermissionToken token) {
+        token.continuePermissionRequest();
+    }
+
+    @Override
+    public void onError(DexterError error) {
+        Log.e("Dexter", "There was an error: " + error.toString());
     }
 }

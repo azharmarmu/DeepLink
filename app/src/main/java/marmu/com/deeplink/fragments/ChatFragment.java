@@ -1,23 +1,21 @@
 package marmu.com.deeplink.fragments;
 
-import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
-import android.util.TypedValue;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.RelativeLayout;
+import android.view.animation.AlphaAnimation;
+import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
@@ -30,10 +28,13 @@ import marmu.com.deeplink.model.ChatListModel;
 import marmu.com.deeplink.utils.Constants;
 import marmu.com.deeplink.utils.Firebase;
 
+
 @SuppressWarnings({"unchecked", "ConstantConditions"})
 public class ChatFragment extends Fragment {
-
     private List<ChatListModel> chatList;
+    AlphaAnimation inAnimation;
+    AlphaAnimation outAnimation;
+    FrameLayout progressBarHolder;
 
     public ChatFragment() {
     }
@@ -54,45 +55,54 @@ public class ChatFragment extends Fragment {
 
     private void prepareChatLists(final View rootView) {
 
-        final RelativeLayout commonLayout = rootView.findViewById(R.id.common_layout);
+        progressBarHolder = rootView.findViewById(R.id.progressBarHolder);
+        enableProgressBar();
 
-        chatList = new ArrayList<>();
+
         String mykey = Constants.AUTH.getCurrentUser().getUid();
-        Firebase.userListDBRef.child(mykey).child(Constants.MY_CHAT).keepSynced(true);
-        Firebase.userListDBRef.child(mykey).child(Constants.MY_CHAT).addValueEventListener(new ValueEventListener() {
+        Query chatListQuery = Firebase.userListDBRef.child(mykey).child(Constants.MY_CHAT).orderByChild(Constants.DATE);
+        chatListQuery.keepSynced(true);
+        chatListQuery.addValueEventListener(new ValueEventListener() {
+
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
+                chatList = new ArrayList<>();
+                TextView noView = rootView.findViewById(R.id.tv_no_chat_history);
                 if (dataSnapshot.getValue() != null) {
-                    HashMap<String, Object> chatListMap = (HashMap<String, Object>) dataSnapshot.getValue();
-                    for (String key : chatListMap.keySet()) {
-                        chatList.add(new ChatListModel(key, chatListMap.get(key)));
+                    noView.setVisibility(View.GONE);
+                    for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                        HashMap<String, Object> chatListMap = (HashMap<String, Object>) snapshot.getValue();
+                        chatList.add(new ChatListModel(snapshot.getKey(), chatListMap));
                     }
                     populateView(rootView);
                 } else {
-                    RelativeLayout.LayoutParams params = new RelativeLayout
-                            .LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-                            ViewGroup.LayoutParams.MATCH_PARENT);
-                    TextView noView = new TextView(getActivity());
-                    noView.setLayoutParams(params);
-
-                    noView.setTextColor(ContextCompat.getColor(getContext(), R.color.colorBlack));
-                    noView.setPadding(16, 16, 16, 16);
-                    noView.setText("No Chat History");
-                    noView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20);
-                    noView.setTypeface(null, Typeface.BOLD);
-                    noView.setGravity(Gravity.CENTER);
-                    commonLayout.addView(noView);
+                    noView.setVisibility(View.VISIBLE);
                 }
+                disableProgressBar();
             }
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
+                disableProgressBar();
                 Log.e("Error", databaseError.getMessage());
             }
         });
-
-
     }
+
+    private void enableProgressBar() {
+        inAnimation = new AlphaAnimation(0f, 1f);
+        inAnimation.setDuration(200);
+        progressBarHolder.setAnimation(inAnimation);
+        progressBarHolder.setVisibility(View.VISIBLE);
+    }
+
+    private void disableProgressBar() {
+        outAnimation = new AlphaAnimation(1f, 0f);
+        outAnimation.setDuration(200);
+        progressBarHolder.setAnimation(outAnimation);
+        progressBarHolder.setVisibility(View.GONE);
+    }
+
 
     private void populateView(View rootView) {
         RecyclerView.Adapter adapter = new ChatListAdapter(getContext(), chatList);

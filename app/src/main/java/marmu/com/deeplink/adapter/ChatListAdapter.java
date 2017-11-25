@@ -44,41 +44,54 @@ public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.MyView
     }
 
     @Override
-    public void onBindViewHolder(MyViewHolder holder, int position) {
+    public void onBindViewHolder(final MyViewHolder holder, int position) {
         final ChatListModel list = chatList.get(position);
-        HashMap<String, Object> listMap = (HashMap<String, Object>) list.getChatListMap();
-        if (listMap.containsKey("key")) {
-            final String userKey = String.valueOf(listMap.get("key"));
+        final HashMap<String, Object> listMap = (HashMap<String, Object>) list.getChatListMap();
+        if (listMap.containsKey("isGroupChat")) {
+            if ((boolean) listMap.get("isGroupChat")) {
+                //// TODO: 19/10/17 group image
+                holder.chatName.setText(listMap.get("name").toString());
+                holder.chatLastMsg.setText("Coming soon...");
+                holder.chatTime.setText("Coming soon...");
 
-            HashMap<String, Object> user = (HashMap<String, Object>) Users.users.get(userKey);
-
-            String name;
-            if (user.get(Constants.MY_NAME) != null) {
-                name = String.valueOf(user.get(Constants.MY_NAME));
+                holder.chatHolder.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Intent chatActivity = new Intent(context, ChatScreenActivity.class);
+                        chatActivity.putExtra("isGroupChat", true);
+                        chatActivity.putExtra(Constants.CHAT_KEY, list.getKey());
+                        chatActivity.putExtra(Constants.HIS_NAME, holder.chatName.getText());
+                        context.startActivity(chatActivity);
+                    }
+                });
             } else {
-                name = String.valueOf(user.get(Constants.PHONE_NUMBER));
-            }
-            final String userName = name;
+                if (listMap.containsKey("key")) {
+                    final String userKey = String.valueOf(listMap.get("key"));
 
-            ImageUtils.loadImageToViewByURL(context, holder.profilePic,
-                    Uri.parse(String.valueOf(user.get(Constants.IMG_URL))));
-            holder.chatName.setText(name);
-            holder.chatLastMsg.setText("Coming soon...");
-            holder.chatTime.setText("Coming soon...");
+                    HashMap<String, Object> user = (HashMap<String, Object>) Users.users.get(userKey);
 
-            holder.chatHolder.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    Intent chatActivity = new Intent(context, ChatScreenActivity.class);
-                    chatActivity.putExtra(Constants.HIS_KEY, userKey);
-                    chatActivity.putExtra(Constants.HIS_NAME, userName);
-                    chatActivity.putExtra(Constants.CHAT_KEY, list.getKey());
-                    chatActivity.putExtra("isGroupChat", false);
-                    context.startActivity(chatActivity);
+                    final String userName = listMap.get("name").toString();
+
+                    ImageUtils.loadImageToViewByURL(context, holder.profilePic,
+                            Uri.parse(String.valueOf(user.get(Constants.IMG_URL))));
+                    holder.chatName.setText(userName);
+                    holder.chatLastMsg.setText("Coming soon...");
+                    holder.chatTime.setText("Coming soon...");
+
+                    holder.chatHolder.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            Intent chatActivity = new Intent(context, ChatScreenActivity.class);
+                            chatActivity.putExtra(Constants.HIS_KEY, userKey);
+                            chatActivity.putExtra(Constants.HIS_NAME, userName);
+                            chatActivity.putExtra(Constants.CHAT_KEY, list.getKey());
+                            chatActivity.putExtra("isGroupChat", false);
+                            context.startActivity(chatActivity);
+                        }
+                    });
                 }
-            });
+            }
         }
-
     }
 
     @Override

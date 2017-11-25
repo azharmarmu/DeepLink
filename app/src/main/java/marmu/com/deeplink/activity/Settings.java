@@ -2,6 +2,7 @@ package marmu.com.deeplink.activity;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.Dialog;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -10,11 +11,16 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -30,10 +36,10 @@ import marmu.com.deeplink.R;
 import marmu.com.deeplink.utils.Constants;
 import marmu.com.deeplink.utils.Firebase;
 import marmu.com.deeplink.utils.ImageUtils;
-import marmu.com.deeplink.utils.Permissions;
 
 import static marmu.com.deeplink.utils.Constants.REQUEST_CAMERA;
 import static marmu.com.deeplink.utils.Constants.REQUEST_GALLERY;
+import static marmu.com.deeplink.utils.Firebase.userListDBRef;
 
 @SuppressWarnings({"unchecked", "ConstantConditions"})
 public class Settings extends AppCompatActivity {
@@ -50,9 +56,9 @@ public class Settings extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
 
-        profileName = (TextView) findViewById(R.id.tv_name);
-        profilePic = (ImageView) findViewById(R.id.iv_profile_pic);
-        progressBar = (ProgressBar) findViewById(R.id.progress_bar);
+        profileName = findViewById(R.id.tv_name);
+        profilePic = findViewById(R.id.iv_profile_pic);
+        progressBar = findViewById(R.id.progress_bar);
 
         loadUI();
 
@@ -61,7 +67,12 @@ public class Settings extends AppCompatActivity {
             public void onClick(View view) {
                 Intent intent = new Intent(Settings.this, ImagePreview.class);
                 intent.putExtra(Constants.IMG_URL, imageUrl);
-                startActivity(intent);
+                ActivityOptionsCompat options = ActivityOptionsCompat.
+                        makeSceneTransitionAnimation(Settings.this,
+                                profilePic,
+                                getString(R.string.app_name));
+
+                startActivity(intent, options.toBundle());
             }
         });
     }
@@ -70,7 +81,7 @@ public class Settings extends AppCompatActivity {
 
     @SuppressWarnings("ConstantConditions")
     private void loadUI() {
-        Firebase.userListDBRef.child(Constants.AUTH.getCurrentUser().getUid())
+        userListDBRef.child(Constants.AUTH.getCurrentUser().getUid())
                 .addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
@@ -83,12 +94,15 @@ public class Settings extends AppCompatActivity {
                             }
                             if (user.containsKey(Constants.IMG_URL)) {
                                 imageUrl = String.valueOf(user.get(Constants.IMG_URL));
+                            } else {
+                                imageUrl = "";
                             }
                             if (profilePhoto != null) {
                                 profilePic.setImageBitmap(profilePhoto);
                             } else {
                                 ImageUtils.loadImageToViewByURL(Settings.this, profilePic, Uri.parse(imageUrl));
                             }
+                            progressBar.setVisibility(View.GONE);
                         }
                     }
 
@@ -107,27 +121,50 @@ public class Settings extends AppCompatActivity {
     }
 
     public void chooseImage(View view) {
-        if (Permissions.EXTERNAL_STORAGE(Settings.this)) {
-            final CharSequence[] items = {"Take Photo", "Choose from Library", "Cancel"};
-            AlertDialog.Builder builder = new AlertDialog.Builder(Settings.this);
-            builder.setTitle("Add Photo!");
-            builder.setItems(items, new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int item) {
-                    if (items[item].equals("Take Photo")) {
-                        cameraIntent();
-                    } else if (items[item].equals("Choose from Library")) {
-                        galleryIntent();
-                    } else if (items[item].equals("Cancel")) {
-                        dialog.dismiss();
-                    }
+        final Dialog dialog = new Dialog(this, R.style.DialogTheme);
+        dialog.setContentView(R.layout.dialog_image_settings);
+
+        Window window = dialog.getWindow();
+        WindowManager.LayoutParams layoutParams = window.getAttributes();
+        window.setLayout(ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT);
+        layoutParams.gravity = Gravity.BOTTOM;
+
+        // set the custom dialog components - text and button
+        TextView gallery = dialog.findViewById(R.id.dialog_gallery);
+        TextView camera = dialog.findViewById(R.id.dialog_camera);
+        TextView remove = dialog.findViewById(R.id.dialog_remove);
+
+        gallery.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                galleryIntent();
+                dialog.dismiss();
+            }
+        });
+
+        camera.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                cameraIntent();
+                dialog.dismiss();
+            }
+        });
+
+        remove.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (!imageUrl.isEmpty()) {
+                    Firebase.deleteInFirebase(Constants.AUTH.getCurrentUser().getUid());
+                    dialog.dismiss();
                 }
-            });
-            builder.show();
-        }
+            }
+        });
+        dialog.show();
     }
 
     Uri imageUri;
+
     private void cameraIntent() {
         ContentValues values = new ContentValues();
         values.put(MediaStore.Images.Media.TITLE, "New Picture");
@@ -162,11 +199,13 @@ public class Settings extends AppCompatActivity {
                             null);
 
                 } else if (requestCode == REQUEST_GALLERY) {
-                    profilePhoto = ImageUtils.selectedImageFromGallery(Settings.this, data);
+                    profilePhoto = ImageUtils
+                            .selectedImageFromGallery(Settings.this, data);
                     Firebase.storeInFirebase(data.getData(),
                             Constants.PROFILE_PIC,
                             Constants.AUTH.getCurrentUser().getUid(),
-                            progressBar, null);
+                            progressBar,
+                            null);
                     profilePic.setImageBitmap(profilePhoto);
                 }
             } catch (Exception e) {
@@ -195,7 +234,7 @@ public class Settings extends AppCompatActivity {
             public void onClick(DialogInterface dialog, int whichButton) {
                 String myName = etName.getText().toString();
                 if (!myName.isEmpty()) {
-                    Firebase.userListDBRef.child(Constants.AUTH.getCurrentUser().getUid())
+                    userListDBRef.child(Constants.AUTH.getCurrentUser().getUid())
                             .child(Constants.MY_NAME)
                             .setValue(myName);
                 }

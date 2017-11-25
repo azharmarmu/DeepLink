@@ -39,6 +39,7 @@ public class FirebasePhoneAuthentication {
                     public void onVerificationCompleted(PhoneAuthCredential credential) {
                         //Instant verification or Auto-retrieval.
                         Log.d("Success", "onVerificationCompleted:" + credential);
+                        DialogUtils.dismissProgressDialog();
                         FirebasePhoneAuthentication
                                 .signInWithPhoneAuthCredential(activity, credential, phoneNumber);
                     }
@@ -48,10 +49,10 @@ public class FirebasePhoneAuthentication {
                         // This callback is invoked in an invalid request for verification is made,
                         // for instance if the the phone number format is not valid.
                         Log.w("Failed", "onVerificationFailed", e);
-
+                        DialogUtils.dismissProgressDialog();
                         if (e instanceof FirebaseAuthInvalidCredentialsException) {
                             // Invalid request
-                            DialogUtils.appToastLong(activity, "Invalid request");
+                            DialogUtils.appToastLong(activity, "Invalid request:"+e);
                         } else if (e instanceof FirebaseTooManyRequestsException) {
                             // The SMS quota for the project has been exceeded
                             DialogUtils.appToastLong(activity,

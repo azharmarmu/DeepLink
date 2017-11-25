@@ -8,7 +8,6 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.RelativeLayout;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -42,8 +41,6 @@ public class StatusFragment extends Fragment {
 
     private void prepareChatLists(final View rootView) {
 
-        final RelativeLayout commonLayout = rootView.findViewById(R.id.common_layout);
-
         /*Firebase.chatListDBRef.keepSynced(true);
         Firebase.chatListDBRef.addValueEventListener(new ValueEventListener() {
             @Override
@@ -53,19 +50,7 @@ public class StatusFragment extends Fragment {
                     changeMapToList(chatListMap);
                     populateView(rootView);
                 } else {
-                    RelativeLayout.LayoutParams params = new RelativeLayout
-                            .LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-                            ViewGroup.LayoutParams.MATCH_PARENT);
-                    TextView noView = new TextView(getActivity());
-                    noView.setLayoutParams(params);
 
-                    noView.setTextColor(ContextCompat.getColor(getContext(), R.color.colorBlack));
-                    noView.setPadding(16, 16, 16, 16);
-                    noView.setText("No Status");
-                    noView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20);
-                    noView.setTypeface(null, Typeface.BOLD);
-                    noView.setGravity(Gravity.CENTER);
-                    commonLayout.addView(noView);
                 }
             }
 

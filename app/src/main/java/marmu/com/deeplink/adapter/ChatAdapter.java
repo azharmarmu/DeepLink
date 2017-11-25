@@ -64,6 +64,9 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             case 4:
                 viewHolder = new ImageReceiverViewHolder(inflater.inflate(R.layout.chat_cell_receiver_image, parent, false));
                 break;
+            case 7:
+                viewHolder = new BOTViewHolder(inflater.inflate(R.layout.chat_cell_bot_message, parent, false));
+                break;
             default:
                 break;
         }
@@ -97,7 +100,9 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             } else {
                 //receiverAudio((ImageReceiverViewHolder) holder, chatList, position);
             }
-        }*/
+        }*/ else if (type.equalsIgnoreCase(Constants.BOT)) {
+            botMessage((BOTViewHolder) holder, chatList);
+        }
     }
 
     private void senderMessage(MessageSenderViewHolder holder, HashMap<String, Object> chatList) {
@@ -193,6 +198,9 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         }
     }
 
+    private void botMessage(BOTViewHolder holder, HashMap<String, Object> chatList) {
+        holder.botMessage.setText(String.valueOf(chatList.get(Constants.MESSAGE)));
+    }
 
     @Override
     public int getItemCount() {
@@ -245,6 +253,15 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         }
     }
 
+    private class BOTViewHolder extends RecyclerView.ViewHolder {
+        TextView botMessage;
+
+        private BOTViewHolder(View itemView) {
+            super(itemView);
+            botMessage = itemView.findViewById(R.id.message_bot);
+        }
+    }
+
     @Override
     public int getItemViewType(int position) {
 
@@ -273,6 +290,8 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 } else {
                     return 6;
                 }
+            } else if (type.equalsIgnoreCase(Constants.BOT)) {
+                return 7;
             }
         } catch (Exception e) {
             e.printStackTrace();

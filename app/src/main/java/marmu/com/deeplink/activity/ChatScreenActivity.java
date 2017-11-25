@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
 import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -55,7 +54,7 @@ public class ChatScreenActivity extends AppCompatActivity {
     static String chatKey;
     static String myKey;
     static String partnerKey;
-    static String partnerName;
+    static String toolBarName;
     boolean isGroupChat = false;
 
     //audio variable
@@ -70,12 +69,12 @@ public class ChatScreenActivity extends AppCompatActivity {
         if (bundle != null) {
             myKey = Constants.AUTH.getCurrentUser().getUid();
             partnerKey = bundle.getString(Constants.HIS_KEY);
-            partnerName = bundle.getString(Constants.HIS_NAME);
+            toolBarName = bundle.getString(Constants.HIS_NAME);
             chatKey = bundle.getString(Constants.CHAT_KEY);
             isGroupChat = bundle.getBoolean("isGroupChat");
 
-            getSupportActionBar().setTitle(partnerName);
-
+            if (toolBarName != null)
+                getSupportActionBar().setTitle(toolBarName);
 
             inboxChat = (EditText) findViewById(R.id.input_box_chat);
             sendButton = (CircleImageView) findViewById(R.id.send_button);
@@ -86,38 +85,10 @@ public class ChatScreenActivity extends AppCompatActivity {
             if (chatKey != null) {
                 getChatHistory();
             } else {
-                if (isGroupChat) {
-                    createGroupChat();
-                } else {
-                    getChatListOfMine();
-                }
+                getChatListOfMine();
             }
             //audio chat or text chat
             listenForTypeofChat();
-
-
-            inboxChat.addTextChangedListener(new TextWatcher() {
-
-                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                }
-
-                public void onTextChanged(CharSequence s, int start, int before, int count) {
-                    if (!s.equals("")) {
-                        Firebase.userListDBRef.child(partnerKey).child(Constants.MY_CHAT).
-                                child(chatKey).child("status").setValue(Constants.TYPING);
-                    }
-                }
-
-                public void afterTextChanged(Editable editable) {
-                    new Handler().postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            Firebase.userListDBRef.child(partnerKey).child(Constants.MY_CHAT).
-                                    child(chatKey).child("status").setValue(Constants.STOP);
-                        }
-                    }, 1000);
-                }
-            });
 
             sendButton.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -153,23 +124,24 @@ public class ChatScreenActivity extends AppCompatActivity {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (dataSnapshot.getValue() != null) {
                     HashMap<String, Object> myChats = (HashMap<String, Object>) dataSnapshot.getValue();
-                    for (String key : myChats.keySet()) {
-                        if (key.equalsIgnoreCase(myKey + partnerKey)) {
-                            chatKey = myKey + partnerKey;
-                            break;
-                        } else if (key.equalsIgnoreCase(partnerKey + myKey)) {
-                            chatKey = partnerKey + myKey;
-                            break;
+                    try {
+                        for (String key : myChats.keySet()) {
+                            HashMap<String, Object> chatDetails = (HashMap<String, Object>) myChats.get(key);
+                            if (chatDetails.containsKey("key") && !(boolean) chatDetails.get("isGroupChat")) {
+                                if (partnerKey.equalsIgnoreCase(chatDetails.get("key").toString())) {
+                                    chatKey = key;
+                                    break;
+                                }
+                            }
                         }
+                    } catch (Exception e) {
+                        Log.e("Exception", e.getMessage());
                     }
-                    if (chatKey != null && !chatKey.isEmpty()) {
-                        getChatHistory();
-                    } else {
-                        chatKey = myKey + partnerKey;
-                    }
-                } else {
-                    chatKey = myKey + partnerKey;
                 }
+                if (chatKey == null) {
+                    chatKey = Firebase.messageDBRef.push().getKey();
+                }
+                getChatHistory();
             }
 
             @Override
@@ -179,15 +151,12 @@ public class ChatScreenActivity extends AppCompatActivity {
         });
     }
 
-    private void createGroupChat() {
-        chatKey = Firebase.messageDBRef.push().getKey();
-        getChatHistory();
-    }
 
     List<ChatModel> chatHistory = new ArrayList<>();
 
     private void getChatHistory() {
         Query chatQuery = Firebase.messageDBRef.child(chatKey).orderByChild(Constants.DATE);
+        chatQuery.keepSynced(true);
         chatQuery.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -265,17 +234,22 @@ public class ChatScreenActivity extends AppCompatActivity {
     //text message
     private void sendMessage(String message) {
 
-        if (chatHistory == null || chatHistory.size() == 0) {
-            Firebase.userListDBRef.child(myKey).child(Constants.MY_CHAT).
-                    child(chatKey).child("key").setValue(partnerKey);
-            Firebase.userListDBRef.child(myKey).child(Constants.MY_CHAT).
-                    child(chatKey).child("isGroupChat").setValue(isGroupChat);
-            Firebase.userListDBRef.child(partnerKey).child(Constants.MY_CHAT).
-                    child(chatKey).child("key").setValue(myKey);
-            Firebase.userListDBRef.child(partnerKey).child(Constants.MY_CHAT).
-                    child(chatKey).child("isGroupChat").setValue(isGroupChat);
+        HashMap<String, Object> myChatDetails = new HashMap<>();
+        myChatDetails.put("isGroupChat", isGroupChat);
+        myChatDetails.put("name", toolBarName);
+        myChatDetails.put(Constants.DATE, currentTimeMillis());
+        if (isGroupChat) {
 
+        } else {
+            myChatDetails.put("key", partnerKey);
+            Firebase.userListDBRef.child(myKey).child(Constants.MY_CHAT).
+                    child(chatKey).updateChildren(myChatDetails);
+
+            myChatDetails.put("key", myKey);
+            Firebase.userListDBRef.child(partnerKey).child(Constants.MY_CHAT).
+                    child(chatKey).updateChildren(myChatDetails);
         }
+
 
         HashMap<String, Object> messageMap = new HashMap<>();
         messageMap.put(Constants.MESSAGE, message);
@@ -294,16 +268,17 @@ public class ChatScreenActivity extends AppCompatActivity {
     //Image message
     private void sendImageDetails(String uuid, long time) {
 
-        if (chatHistory == null || chatHistory.size() == 0) {
-            Firebase.userListDBRef.child(myKey).child(Constants.MY_CHAT).
-                    child(chatKey).child("key").setValue(partnerKey);
-            Firebase.userListDBRef.child(myKey).child(Constants.MY_CHAT).
-                    child(chatKey).child("isGroupChat").setValue(isGroupChat);
-            Firebase.userListDBRef.child(partnerKey).child(Constants.MY_CHAT).
-                    child(chatKey).child("key").setValue(myKey);
-            Firebase.userListDBRef.child(partnerKey).child(Constants.MY_CHAT).
-                    child(chatKey).child("isGroupChat").setValue(isGroupChat);
-        }
+        HashMap<String, Object> myChatDetails = new HashMap<>();
+        myChatDetails.put("isGroupChat", isGroupChat);
+        myChatDetails.put("name", toolBarName);
+        myChatDetails.put(Constants.DATE, currentTimeMillis());
+        myChatDetails.put("key", partnerKey);
+        Firebase.userListDBRef.child(myKey).child(Constants.MY_CHAT).
+                child(chatKey).updateChildren(myChatDetails);
+
+        myChatDetails.put("key", myKey);
+        Firebase.userListDBRef.child(partnerKey).child(Constants.MY_CHAT).
+                child(chatKey).updateChildren(myChatDetails);
 
         HashMap<String, Object> messageMap = new HashMap<>();
         messageMap.put(Constants.FROM, myKey);

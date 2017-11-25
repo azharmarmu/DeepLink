@@ -26,10 +26,11 @@ public class Firebase {
 
     private static final FirebaseDatabase DATABASE = FirebaseDatabase.getInstance();
     public static final DatabaseReference userListDBRef = DATABASE.getReference(Constants.USER);
+    public static final DatabaseReference groupListDBRef = DATABASE.getReference(Constants.GROUP);
     public static final DatabaseReference messageDBRef = DATABASE.getReference(Constants.MESSAGE);
     //public static final DatabaseReference messageStatusDBRef = DATABASE.getReference(Constants.MESSAGE_STATUS);
 
-    private static StorageReference mStorageReference = FirebaseStorage.getInstance().getReference();
+    public static StorageReference mStorageReference = FirebaseStorage.getInstance().getReference();
 
 
     /*Image url*/
@@ -89,10 +90,10 @@ public class Firebase {
     }
 
     public static void storeInFirebaseAudio(Uri uri,
-                                       final String type,
-                                       final String fileName,
-                                       final ProgressBar progressBar,
-                                       final String uuid) {
+                                            final String type,
+                                            final String fileName,
+                                            final ProgressBar progressBar,
+                                            final String uuid) {
 
         StorageReference imgRef;
         if (type.equalsIgnoreCase(Constants.PROFILE_PIC))
@@ -135,6 +136,24 @@ public class Firebase {
                 }/* else if (type.equalsIgnoreCase(Constants.CHAT_FILE)) {
                 }*/
 
+            }
+        });
+    }
+
+
+    public static void deleteInFirebase(final String fileName) {
+        StorageReference imgRef = mStorageReference.child("profile_images").child(fileName);
+        imgRef.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                userListDBRef.child(fileName)
+                        .child(Constants.IMG_URL)
+                        .removeValue();
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Log.e("Error", e.getMessage());
             }
         });
     }

@@ -3,12 +3,51 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/colorBlack"
     tools:context="marmu.com.deeplink.activity.ImagePreview">
 
-    <ImageView
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:id="@+id/iv_back"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_centerVertical="true"
+                android:contentDescription="@string/app_name"
+                android:scaleX="-1"
+                android:src="@drawable/ic_arrow" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginStart="@dimen/_16dp"
+                android:layout_toEndOf="@+id/iv_back"
+                android:text="Profile Name"
+                android:textColor="@color/colorWhite"
+                android:textSize="@dimen/_20sp" />
+        </RelativeLayout>
+
+    </android.support.v7.widget.Toolbar>
+
+    <com.github.chrisbanes.photoview.PhotoView
         android:id="@+id/image_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:contentDescription="@string/app_name" />
+        android:layout_below="@+id/toolbar"
+        android:layout_marginBottom="@dimen/_50dp"
+        android:layout_marginTop="@dimen/_50dp"
+        android:adjustViewBounds="true"
+        android:contentDescription="@string/app_name"
+        android:scaleType="centerCrop"
+        android:transitionName="@string/app_name" />
 
 </RelativeLayout>

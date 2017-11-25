@@ -56,7 +56,13 @@ public class ContactActivity extends AppCompatActivity {
                 HashMap<String, Object> user = (HashMap<String, Object>) users.get(key);
                 if (user.containsKey(Constants.PHONE_NUMBER)) {
                     if (!Constants.MY_PHONE_NUMBER.equalsIgnoreCase(user.get(Constants.PHONE_NUMBER).toString())) {
-                        allPhoneNumber.add(String.valueOf(user.get(Constants.PHONE_NUMBER)));
+                        String phNumber = String.valueOf(user.get(Constants.PHONE_NUMBER));
+                        phNumber = phNumber.replace(" ", "");
+                        if (phNumber.contains("+91")) {
+                            phNumber = phNumber.substring(3);
+                        }
+
+                        allPhoneNumber.add(phNumber);
                         allKey.add(key);
                     }
                 }
@@ -161,5 +167,10 @@ public class ContactActivity extends AppCompatActivity {
                 break;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
     }
 }

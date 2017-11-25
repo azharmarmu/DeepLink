@@ -16,6 +16,7 @@
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
+        android:largeHeap="true"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
@@ -66,9 +67,11 @@
         <activity
             android:name=".activity.ImagePreview"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
+        <activity android:name=".activity.NewGroupActivity" />
+        <activity android:name=".activity.GalleryActivity" />
 
         <receiver
-            android:name=".sms.SMSReceiver"
+            android:name=".receiver.SMSReceiver"
             android:permission="android.permission.BROADCAST_SMS">
             <intent-filter>
                 <action android:name="android.provider.Telephony.SMS_RECEIVED" />
@@ -113,8 +116,6 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/provider_paths" />
         </provider>
-
-        <activity android:name=".activity.NewGroupActivity"></activity>
     </application>
 
 </manifest>
