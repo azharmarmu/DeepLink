@@ -10,6 +10,9 @@ import com.google.firebase.auth.PhoneAuthProvider;
 @SuppressWarnings("ConstantConditions")
 public class Constants {
 
+    static final String ENV = "development";
+    //public static final String ENV = "production";
+
     public static String MY_PHONE_NUMBER = "";
 
     public static int REQUEST_CAMERA = 1;

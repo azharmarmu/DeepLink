@@ -76,10 +76,10 @@ public class ChatScreenActivity extends AppCompatActivity {
             if (toolBarName != null)
                 getSupportActionBar().setTitle(toolBarName);
 
-            inboxChat = (EditText) findViewById(R.id.input_box_chat);
-            sendButton = (CircleImageView) findViewById(R.id.send_button);
-            recordButton = (CircleImageView) findViewById(R.id.record_button);
-            imageButton = (ImageButton) findViewById(R.id.camera_button);
+            inboxChat = findViewById(R.id.input_box_chat);
+            sendButton = findViewById(R.id.send_button);
+            recordButton = findViewById(R.id.record_button);
+            imageButton = findViewById(R.id.camera_button);
 
             // checking already we have chatted
             if (chatKey != null) {
@@ -179,7 +179,7 @@ public class ChatScreenActivity extends AppCompatActivity {
 
     private void populateView() {
         RecyclerView.Adapter adapter = new ChatAdapter(ChatScreenActivity.this, chatHistory, myKey);
-        final RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
+        final RecyclerView recyclerView = findViewById(R.id.recycler_view);
         recyclerView.removeAllViews();
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(ChatScreenActivity.this);
         recyclerView.setLayoutManager(layoutManager);
@@ -238,6 +238,7 @@ public class ChatScreenActivity extends AppCompatActivity {
         myChatDetails.put("isGroupChat", isGroupChat);
         myChatDetails.put("name", toolBarName);
         myChatDetails.put(Constants.DATE, currentTimeMillis());
+        //noinspection StatementWithEmptyBody
         if (isGroupChat) {
 
         } else {

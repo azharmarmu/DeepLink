@@ -25,12 +25,14 @@ import marmu.com.deeplink.activity.ChatScreenActivity;
 public class Firebase {
 
     private static final FirebaseDatabase DATABASE = FirebaseDatabase.getInstance();
-    public static final DatabaseReference userListDBRef = DATABASE.getReference(Constants.USER);
-    public static final DatabaseReference groupListDBRef = DATABASE.getReference(Constants.GROUP);
-    public static final DatabaseReference messageDBRef = DATABASE.getReference(Constants.MESSAGE);
+    private static final DatabaseReference ENVIRONMENT = DATABASE.getReference(Constants.ENV);
+    public static final DatabaseReference userListDBRef = ENVIRONMENT.child(Constants.USER);
+    //public static final DatabaseReference groupListDBRef = ENVIRONMENT.child(Constants.GROUP);
+    public static final DatabaseReference messageDBRef = ENVIRONMENT.child(Constants.MESSAGE);
     //public static final DatabaseReference messageStatusDBRef = DATABASE.getReference(Constants.MESSAGE_STATUS);
 
-    public static StorageReference mStorageReference = FirebaseStorage.getInstance().getReference();
+    private static StorageReference mStorageReference =
+            FirebaseStorage.getInstance().getReference().child(Constants.ENV);
 
 
     /*Image url*/
@@ -43,7 +45,6 @@ public class Firebase {
                                        final String fileName,
                                        final ProgressBar progressBar,
                                        final String uuid) {
-
         StorageReference imgRef;
         if (type.equalsIgnoreCase(Constants.PROFILE_PIC))
             imgRef = mStorageReference.child("profile_images").child(fileName);
@@ -89,6 +90,7 @@ public class Firebase {
         });
     }
 
+    //todo
     public static void storeInFirebaseAudio(Uri uri,
                                             final String type,
                                             final String fileName,

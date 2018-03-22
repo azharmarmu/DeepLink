@@ -20,9 +20,10 @@ import marmu.com.deeplink.utils.Constants;
 
 public class Invite {
 
-    public String buildLongDynamicLink() {
+    private String buildLongDynamicLink() {
+        String link = "https://deeplink.com/?invitedby=" + "12345";
         return FirebaseDynamicLinks.getInstance().createDynamicLink()
-                .setLink(Uri.parse("https://www.google.co.in/"))
+                .setLink(Uri.parse(link))
                 .setDynamicLinkDomain(Constants.DYNAMIC_LINK_DOMAIN)
                 // Open links with this app on Android
                 .setAndroidParameters(new DynamicLink.AndroidParameters.Builder().build())
@@ -32,6 +33,7 @@ public class Invite {
     }
 
     public void inviteLink(final Activity activity, final String TAG) {
+
         FirebaseDynamicLinks.getInstance().createDynamicLink()
                 .setLongLink(Uri.parse(buildLongDynamicLink()))
                 .buildShortDynamicLink()
@@ -50,7 +52,6 @@ public class Invite {
                             intent.putExtra(Intent.EXTRA_TEXT, msg);
                             intent.setType("text/plain");
                             activity.startActivity(intent);
-
                         }
                     }
                 });

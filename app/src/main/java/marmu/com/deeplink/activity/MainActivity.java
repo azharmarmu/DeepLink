@@ -143,7 +143,7 @@ public class MainActivity extends AppCompatActivity
                             int color = Color.parseColor(mRemoteConfig.getString(Constants.BACK_GROUND));
 
                             //update views?
-                            CoordinatorLayout mainCoordinator = (CoordinatorLayout) findViewById(R.id.coordinator_main);
+                            CoordinatorLayout mainCoordinator = findViewById(R.id.coordinator_main);
                             mainCoordinator.setBackgroundColor(color);
                         } else {
                             DialogUtils.appToastShort(MainActivity.this, "Issue in Remote Config");
@@ -158,14 +158,14 @@ public class MainActivity extends AppCompatActivity
                 Log.e(TAG, "onAuthStateChanged ---> signed_in : " + Constants.AUTH.getCurrentUser());
 
                 //Tab View-Pager
-                ViewPager viewPager = (ViewPager) findViewById(R.id.viewpager);
+                ViewPager viewPager = findViewById(R.id.viewpager);
                 setupViewPager(viewPager);
 
-                TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
+                TabLayout tabLayout = findViewById(R.id.tabs);
                 tabLayout.setupWithViewPager(viewPager);
                 Users.getAllUsers();
             } else {
-                indexMethod();
+                //indexMethod();
             }
         } catch (Exception e) {
             Log.e("Exception", e.getMessage());
